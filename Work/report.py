@@ -2,39 +2,7 @@
 #
 # Exercise 2.4
 
-import csv
-
-
-def read_prices(filename):
-    prices = {}
-
-    with open(filename, 'rt') as f:
-        rows = csv.reader(f)
-        for row in rows:
-            if row:
-                prices[row[0]] = float(row[1])
-
-    return prices
-
-
-
-def read_portfolio(filename):
-    portfolio = []
-
-    types = [str, int, float]
-
-    with open(filename, 'rt') as f:
-        rows = csv.reader(f)
-        headers = next(rows)
-
-        for rowno, row in enumerate(rows, start=1):
-            try:
-                stock_dict = {name: func(val) for name, func, val in zip(headers, types, row)}
-                portfolio.append(stock_dict)
-            except ValueError:
-                print(f'Row {rowno}: Couldn\'t convert: {row}')
-
-    return portfolio
+import fileparse
 
 
 def make_report(portfolio, prices):
@@ -58,8 +26,8 @@ def print_report(report):
 
 
 def portfolio_report(portfolio_filename, prices_filename):
-    portfolio = read_portfolio(portfolio_filename)
-    prices = read_prices(prices_filename)
+    portfolio = fileparse.parse_csv(portfolio_filename, select=['name', 'shares', 'price'], types=[str, int, float])
+    prices = dict(fileparse.parse_csv(prices_filename, has_headers=False, types=[str, float]))
     report = make_report(portfolio, prices)
     print_report(report)
 

@@ -15,10 +15,16 @@ def portfolio_cost(filename):
     return pcost
 
 
-if len(sys.argv) == 2:
-    filename = sys.argv[1]
-else:
-    filename = 'Data/portfolio.csv'
+def main(args):
+    if len(args) == 2:
+        filename = args[1]
+    else:
+        return RuntimeError(f'Usage: {args[0]} filename')
 
-cost = portfolio_cost(filename)
-print('Total cost', cost)
+    with open(filename) as f:
+        cost = portfolio_cost(f)
+    print('Total cost', cost)
+
+
+if __name__ == '__main__':
+    main(sys.argv)

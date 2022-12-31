@@ -5,45 +5,43 @@
 import csv
 
 
-def parse_csv(filename, select=None, types=None, has_headers=True, delimiter=',', silence_errors=False):
+def parse_csv(lines, select=None, types=None, has_headers=True, delimiter=',', silence_errors=False):
     '''
     Parse a CSV file into a list of records
     '''
-    with open(filename) as f:
-        rows = csv.reader(f, delimiter=delimiter)
+    if isinstance(lines, str):
+        raise ValueError('lines should be an iterable')
 
-        # read the file headers
-        if has_headers:
-            headers = next(rows)
+    lines = csv.reader(lines, delimiter=delimiter)
 
-        if select is not None and not has_headers:
-            raise RuntimeError('select argument requires column headers')
+    # read the file headers
+    if has_headers:
+        headers = next(lines)
 
-        indices = None
-        if select is not None:
-            indices = [headers.index(colname) for colname in select]
-            headers = select
+    if select is not None and not has_headers:
+        raise RuntimeError('select argument requires column headers')
 
-        records = []
-        for rowno, row in enumerate(rows, start=1):
-            if not row:
-                continue
+    indices = None
+    if select is not None:
+        indices = [headers.index(colname) for colname in select]
+        headers = select
 
-            if indices is not None:
-                row = [row[index] for index in indices]
+    records = []
+    for lineno, line in enumerate(lines, start=1):
+        if not line:
+            continue
 
-            if types is not None:
-                try:
-                    row = [func(val) for func, val in zip(types, row)]
-                except ValueError as e:
-                    if not silence_errors:
-                        print(f'Cannot parse row {rowno}: {row}; reason: {e}')
+        if indices is not None:
+            line = [line[index] for index in indices]
 
-            if has_headers:
-                record = dict(zip(headers, row))
-            else:
-                record = tuple(row)
+        if types is not None:
+            try:
+                line = [func(val) for func, val in zip(types, line)]
+            except ValueError as e:
+                if not silence_errors:
+                    print(f'Cannot parse line {lineno}: {line}; reason: {e}')
 
-            records.append(record)
+        record = dict(zip(headers, line)) if has_headers else tuple(line)
+        records.append(record)
 
     return records

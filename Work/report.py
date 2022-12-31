@@ -2,6 +2,8 @@
 #
 # Exercise 2.4
 
+import sys
+
 import fileparse
 
 
@@ -26,11 +28,17 @@ def print_report(report):
 
 
 def portfolio_report(portfolio_filename, prices_filename):
-    portfolio = fileparse.parse_csv(portfolio_filename, select=['name', 'shares', 'price'], types=[str, int, float])
-    prices = dict(fileparse.parse_csv(prices_filename, has_headers=False, types=[str, float]))
+    with open(portfolio_filename) as f:
+        portfolio = fileparse.parse_csv(f, select=['name', 'shares', 'price'], types=[str, int, float])
+    with open(prices_filename) as f:
+        prices = dict(fileparse.parse_csv(f, has_headers=False, types=[str, float]))
     report = make_report(portfolio, prices)
     print_report(report)
 
 
+def main(args):
+    portfolio_report(args[1], args[2])
+
+
 if __name__ == '__main__':
-    portfolio_report('Data/portfolio.csv', 'Data/prices.csv')
+    main(sys.argv)

@@ -40,6 +40,7 @@ def parse_csv(lines, select=None, types=None, has_headers=True, delimiter=',', s
             except ValueError as e:
                 if not silence_errors:
                     print(f'Cannot parse line {lineno}: {line}; reason: {e}')
+                    continue
 
         record = dict(zip(headers, line)) if has_headers else tuple(line)
         records.append(record)

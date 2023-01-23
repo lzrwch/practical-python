@@ -4,15 +4,12 @@
 
 import sys
 
-import fileparse
-import stock
+import report
 
 
 def portfolio_cost(filename):
-    with open(filename) as f:
-        portfolio_dicts = fileparse.parse_csv(f, select=['name', 'shares', 'price'], types=[str, int, float])
-    portfolio = [stock.Stock(name=d['name'], shares=d['shares'], price=d['price']) for d in portfolio_dicts]
-    return sum(stock.cost() for stock in portfolio)
+    portfolio = report.read_portfolio(filename)
+    return portfolio.total_cost
 
 
 def main(args):

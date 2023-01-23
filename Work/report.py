@@ -7,6 +7,7 @@ import sys
 import fileparse
 import stock
 import tableformat
+from portfolio import Portfolio
 
 
 def make_report(portfolio, prices):
@@ -28,10 +29,13 @@ def print_report(reportdata, formatter):
         formatter.row(rowdata)
 
 
-def read_portfolio(portfolio_filename):
+def read_portfolio(portfolio_filename, **opts):
     with open(portfolio_filename) as f:
-        portfolio_dicts = fileparse.parse_csv(f, select=['name', 'shares', 'price'], types=[str, int, float])
-    return [stock.Stock(name=d['name'], shares=d['shares'], price=d['price']) for d in portfolio_dicts]
+        portfolio_dicts = fileparse.parse_csv(f,
+            select=['name', 'shares', 'price'],
+            types=[str, int, float],
+            **opts)
+    return Portfolio([stock.Stock(**d) for d in portfolio_dicts])
 
 
 def read_prices(prices_filename):
